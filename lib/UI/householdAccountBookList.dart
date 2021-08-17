@@ -1,16 +1,11 @@
 import 'package:api/model/HouseholdAccountData.dart';
 import 'package:api/http//HouseholdAccountDataHttp.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widget/drawerMenu.dart';
 import './input.dart';
 
-class HouseholdAcccountBookList extends StatefulWidget {
-  @override
-  _HouseholdAcccountBookList createState() => _HouseholdAcccountBookList();
-}
-
-class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
-    with SingleTickerProviderStateMixin {
+class HouseholdAcccountBookList extends HookConsumerWidget {
   List<HouseholdAccountData> householdAccountDataList = [];
   TabController tabController;
   final List<Tab> tabs = <Tab>[
@@ -20,55 +15,42 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
   ];
 
   @override
-  void initState() {
-    tabController = TabController(vsync: this, length: tabs.length);
-    super.initState();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    this.householdAccountDataList =
+        HouseholdAccountDataHttp.getHouseholdAccountDataList();
 
-  @override
-  Widget build(BuildContext context) {
-    this.householdAccountDataList = HouseholdAccountDataHttp.getHouseholdAccountDataList();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: createAppBarText(),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add_box),
-            onPressed: () {
-              onPressAddButton();
-            },
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: createAppBarText(),
+          bottom: TabBar(
+            tabs: tabs,
           ),
-        ],
-        bottom: TabBar(
-          controller: tabController,
-          tabs: tabs,
         ),
-      ),
-      drawer: DrawerMenu(),
-      body: TabBarView(
-        controller: tabController,
-        children: tabs.map(
-          (Tab tab) {
-            return SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  createHouseholdAcccountBookDetail(tab.text),
-                ],
-              ),
-            );
-          },
-        ).toList(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: onPressAddButton,
+        drawer: DrawerMenu(),
+        body: TabBarView(
+          children: tabs.map(
+            (Tab tab) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    createHouseholdAcccountBookDetail(tab.text),
+                  ],
+                ),
+              );
+            },
+          ).toList(),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){onPressAddButton(context);},
+        ),
       ),
     );
   }
 
   Widget createHouseholdAcccountBookDetail(String tabText) {
-
     int tabType;
 
     switch (tabText) {
@@ -99,7 +81,7 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
     return Text("家計簿一覧");
   }
 
-  List<Widget> createWordCards( int tabType) {
+  List<Widget> createWordCards(int tabType) {
     return householdAccountDataList.map(
       (HouseholdAccountData householdAccountData) {
         if (householdAccountData.type == tabType || tabType == 3) {
@@ -107,7 +89,7 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                createWordTile(householdAccountData,tabType),
+                createWordTile(householdAccountData, tabType),
                 createButtonBar(householdAccountData.id),
               ],
             ),
@@ -118,17 +100,17 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
     ).toList();
   }
 
-  Widget createWordTile(HouseholdAccountData householdAccountData ,int tabType) {
-    Icon icon =
-    householdAccountData.type == HouseholdAccountData.spendingFlg
-            ? Icon(
-                Icons.subdirectory_arrow_left_outlined,
-                color: Colors.pink,
-              )
-            : Icon(
-                Icons.add_box,
-                color: Colors.blue,
-              );
+  Widget createWordTile(
+      HouseholdAccountData householdAccountData, int tabType) {
+    Icon icon = householdAccountData.type == HouseholdAccountData.spendingFlg
+        ? Icon(
+            Icons.subdirectory_arrow_left_outlined,
+            color: Colors.pink,
+          )
+        : Icon(
+            Icons.add_box,
+            color: Colors.blue,
+          );
     return ListTile(
       leading: icon,
       title: Text(householdAccountData.item),
@@ -157,7 +139,7 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
 
   void onPressDeleteButton(int id) {}
 
-  void onPressAddButton() {
+  void onPressAddButton(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (BuildContext context) => InputForm()),
