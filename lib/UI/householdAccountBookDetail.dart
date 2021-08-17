@@ -1,3 +1,5 @@
+import 'package:api/http/HouseholdAccountDataHttp.dart';
+import 'package:api/model/HouseholdAccountData.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,6 +14,7 @@ class PieData {
 
 // ignore: must_be_immutable
 class HouseholdAcccountBookDetail extends HookConsumerWidget {
+  List<HouseholdAccountData> householdAccountDataList = [];
   List<charts.Series<PieData, String>> _pieData = [];
 
   static Route<dynamic> route() {
@@ -20,10 +23,21 @@ class HouseholdAcccountBookDetail extends HookConsumerWidget {
     );
   }
 
-  generateData() {
+  generateData(List<HouseholdAccountData> householdAccountDataList) {
+    double income = 0;
+    double outcome = 0;
+
+    householdAccountDataList
+        .forEach((HouseholdAccountData householdAccountData) {
+      if (householdAccountData.type == HouseholdAccountData.incomeFlg) {
+        income += householdAccountData.money;
+      } else {
+        outcome += householdAccountData.money;
+      }
+    });
     var pieData = [
-      new PieData('支出 ', 35.8),
-      new PieData('収入', 18.3),
+      new PieData('支出 ', outcome),
+      new PieData('収入', income),
     ];
     _pieData.add(
       charts.Series(
@@ -31,7 +45,7 @@ class HouseholdAcccountBookDetail extends HookConsumerWidget {
         measureFn: (PieData data, _) => data.money,
         id: 'Time spent',
         data: pieData,
-        labelAccessorFn: (PieData data, _) => '${data.activity}:${data.money}',
+        labelAccessorFn: (PieData data, _) => '${data.activity}:${data.money}円',
       ),
     );
     return _pieData;
@@ -39,6 +53,9 @@ class HouseholdAcccountBookDetail extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    this.householdAccountDataList =
+        HouseholdAccountDataHttp.getHouseholdAccountDataList();
+
     return Scaffold(
       appBar: AppBar(
         title: createAppBarText(),
@@ -46,7 +63,7 @@ class HouseholdAcccountBookDetail extends HookConsumerWidget {
       drawer: DrawerMenu(),
       body: Center(
         child: charts.PieChart(
-          generateData(),
+          generateData(householdAccountDataList),
           animate: true,
           animationDuration: Duration(seconds: 1),
           defaultRenderer: new charts.ArcRendererConfig(
