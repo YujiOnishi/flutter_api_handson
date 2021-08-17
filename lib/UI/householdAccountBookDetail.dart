@@ -12,18 +12,15 @@ class PieData {
   PieData(this.activity, this.money);
 }
 
-// ignore: must_be_immutable
 class HouseholdAccountBookDetail extends StatelessWidget {
-  List<HouseholdAccountData> householdAccountDataList = [];
-  List<charts.Series<PieData, String>> _pieData = [];
-
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(
       builder: (_) => HouseholdAccountBookDetail(),
     );
   }
 
-  generateData(List<HouseholdAccountData> householdAccountDataList) {
+  List<charts.Series<PieData, String>> generateData(List<HouseholdAccountData> householdAccountDataList) {
+    List<charts.Series<PieData, String>> _pieData = [];
     double income = 0;
     double outcome = 0;
 
@@ -53,7 +50,7 @@ class HouseholdAccountBookDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this.householdAccountDataList =
+    List<HouseholdAccountData> householdAccountDataList =
         HouseholdAccountDataHttp.getHouseholdAccountDataList();
 
     return Scaffold(
