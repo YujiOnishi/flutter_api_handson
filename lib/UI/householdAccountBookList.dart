@@ -1,4 +1,5 @@
 import 'package:api/model/HouseholdAccountData.dart';
+import 'package:api/http//HouseholdAccountDataHttp.dart';
 import 'package:flutter/material.dart';
 import '../widget/drawerMenu.dart';
 import './input.dart';
@@ -10,6 +11,7 @@ class HouseholdAcccountBookList extends StatefulWidget {
 
 class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
     with SingleTickerProviderStateMixin {
+  List<HouseholdAccountData> householdAccountDataList = [];
   TabController tabController;
   final List<Tab> tabs = <Tab>[
     Tab(text: '総合'),
@@ -25,6 +27,8 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
 
   @override
   Widget build(BuildContext context) {
+    this.householdAccountDataList = HouseholdAccountDataHttp.getHouseholdAccountDataList();
+
     return Scaffold(
       appBar: AppBar(
         title: createAppBarText(),
@@ -64,12 +68,6 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
   }
 
   Widget createHouseholdAcccountBookDetail(String tabText) {
-    List<HouseholdAccountData> householdAccountDataList = [
-      HouseholdAccountData(1, 0, "カメラ", 20000),
-      HouseholdAccountData(2, 1, "売上", 20000),
-      HouseholdAccountData(3, 1, "雑収入", 20000),
-      HouseholdAccountData(4, 0, "レンズ", 20000),
-    ];
 
     int tabType;
 
@@ -77,19 +75,19 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
       case '総合':
         tabType = 3;
         return Column(
-          children: createWordCards(householdAccountDataList, tabType),
+          children: createWordCards(tabType),
         );
         break;
       case '収入':
         tabType = HouseholdAccountData.incomeFlg;
         return Column(
-          children: createWordCards(householdAccountDataList, tabType),
+          children: createWordCards(tabType),
         );
         break;
       case '支出':
         tabType = HouseholdAccountData.spendingFlg;
         return Column(
-          children: createWordCards(householdAccountDataList, tabType),
+          children: createWordCards(tabType),
         );
         break;
       default:
@@ -101,17 +99,16 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
     return Text("家計簿一覧");
   }
 
-  List<Widget> createWordCards(
-      List<HouseholdAccountData> householdAccountDataList, int tabType) {
+  List<Widget> createWordCards( int tabType) {
     return householdAccountDataList.map(
-      (HouseholdAccountData householdAccountDataList) {
-        if (householdAccountDataList.type == tabType || tabType == 3) {
+      (HouseholdAccountData householdAccountData) {
+        if (householdAccountData.type == tabType || tabType == 3) {
           return Card(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                createWordTile(householdAccountDataList, tabType),
-                createButtonBar(householdAccountDataList.id),
+                createWordTile(householdAccountData,tabType),
+                createButtonBar(householdAccountData.id),
               ],
             ),
           );
@@ -121,10 +118,9 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
     ).toList();
   }
 
-  Widget createWordTile(
-      HouseholdAccountData householdAccountDataList, int tabType) {
+  Widget createWordTile(HouseholdAccountData householdAccountData ,int tabType) {
     Icon icon =
-        householdAccountDataList.type == HouseholdAccountData.spendingFlg
+    householdAccountData.type == HouseholdAccountData.spendingFlg
             ? Icon(
                 Icons.subdirectory_arrow_left_outlined,
                 color: Colors.pink,
@@ -135,9 +131,9 @@ class _HouseholdAcccountBookList extends State<HouseholdAcccountBookList>
               );
     return ListTile(
       leading: icon,
-      title: Text(householdAccountDataList.item),
+      title: Text(householdAccountData.item),
       subtitle: Text(
-        '${householdAccountDataList.money}円',
+        '${householdAccountData.money}円',
       ),
     );
   }
