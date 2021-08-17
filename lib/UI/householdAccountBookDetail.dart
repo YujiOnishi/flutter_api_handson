@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widget/drawerMenu.dart';
 import './input.dart';
-
-class HouseholdAcccountBookDetail extends StatefulWidget {
-  @override
-  _HouseholdAcccountBookDetail createState() => _HouseholdAcccountBookDetail();
-}
 
 class PieData {
   String activity;
@@ -14,15 +10,9 @@ class PieData {
   PieData(this.activity, this.money);
 }
 
-class _HouseholdAcccountBookDetail extends State<HouseholdAcccountBookDetail>
-    with SingleTickerProviderStateMixin {
-  List<charts.Series<PieData, String>> _pieData;
-
-  @override
-  void initState() {
-    super.initState();
-    _pieData = List<charts.Series<PieData, String>>();
-  }
+// ignore: must_be_immutable
+class HouseholdAcccountBookDetail extends HookConsumerWidget {
+  List<charts.Series<PieData, String>> _pieData = [];
 
   generateData() {
     var pieData = [
@@ -42,7 +32,7 @@ class _HouseholdAcccountBookDetail extends State<HouseholdAcccountBookDetail>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: createAppBarText(),
@@ -61,21 +51,10 @@ class _HouseholdAcccountBookDetail extends State<HouseholdAcccountBookDetail>
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: onPressAddButton,
-      ),
     );
   }
 
   Widget createAppBarText() {
     return Text("収入支出");
-  }
-
-  void onPressAddButton() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => InputForm()),
-    );
   }
 }
