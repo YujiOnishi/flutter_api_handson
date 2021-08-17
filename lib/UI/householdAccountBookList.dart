@@ -1,14 +1,11 @@
 import 'package:api/model/HouseholdAccountData.dart';
 import 'package:api/http//HouseholdAccountDataHttp.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widget/drawerMenu.dart';
 import './input.dart';
 
-// ignore: must_be_immutable
 class HouseholdAccountBookList extends StatelessWidget {
-  List<HouseholdAccountData> householdAccountDataList = [];
-  TabController tabController;
+  final List<HouseholdAccountData> householdAccountDataList = HouseholdAccountDataHttp.getHouseholdAccountDataList();
   final List<Tab> tabs = <Tab>[
     Tab(text: '総合'),
     Tab(text: '収入'),
@@ -23,9 +20,6 @@ class HouseholdAccountBookList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this.householdAccountDataList =
-        HouseholdAccountDataHttp.getHouseholdAccountDataList();
-
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
