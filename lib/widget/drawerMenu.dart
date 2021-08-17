@@ -16,7 +16,7 @@ class DrawerMenu extends StatelessWidget {
             title: Text('収入支出'),
             onTap: () {
               Navigator.of(context).push<dynamic>(
-                HouseholdAcccountBookDetail.route(),
+                HouseholdAccountBookDetail.route(),
               );
             },
           ),
@@ -24,7 +24,7 @@ class DrawerMenu extends StatelessWidget {
             title: Text('家計簿一覧'),
             onTap: () {
               Navigator.of(context).push<dynamic>(
-                HouseholdAcccountBookList.route(),
+                HouseholdAccountBookList.route(),
               );
             },
           ),
