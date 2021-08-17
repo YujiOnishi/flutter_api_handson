@@ -15,8 +15,6 @@ class HouseholdAcccountBookList extends HookConsumerWidget {
     Tab(text: '支出'),
   ];
 
-
-
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(
       builder: (_) => HouseholdAcccountBookList(),
@@ -53,7 +51,9 @@ class HouseholdAcccountBookList extends HookConsumerWidget {
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: (){onPressAddButton(context);},
+          onPressed: () {
+            onPressAddButton(context);
+          },
         ),
       ),
     );
