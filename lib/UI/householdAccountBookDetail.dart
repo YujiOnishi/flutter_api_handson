@@ -2,9 +2,7 @@ import 'package:api/http/HouseholdAccountDataHttp.dart';
 import 'package:api/model/HouseholdAccountData.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widget/drawerMenu.dart';
-import './input.dart';
 
 class PieData {
   String activity;
