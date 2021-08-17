@@ -14,6 +14,12 @@ class PieData {
 class HouseholdAcccountBookDetail extends HookConsumerWidget {
   List<charts.Series<PieData, String>> _pieData = [];
 
+  static Route<dynamic> route() {
+    return MaterialPageRoute<dynamic>(
+      builder: (_) => HouseholdAcccountBookDetail(),
+    );
+  }
+
   generateData() {
     var pieData = [
       new PieData('支出 ', 35.8),

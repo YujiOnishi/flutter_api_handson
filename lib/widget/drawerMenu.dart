@@ -15,22 +15,16 @@ class DrawerMenu extends StatelessWidget {
           ListTile(
             title: Text('収入支出'),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => HouseholdAcccountBookDetail(),
-                ),
+              Navigator.of(context).push<dynamic>(
+                HouseholdAcccountBookDetail.route(),
               );
             },
           ),
           ListTile(
             title: Text('家計簿一覧'),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => HouseholdAcccountBookList(),
-                ),
+              Navigator.of(context).push<dynamic>(
+                HouseholdAcccountBookList.route(),
               );
             },
           ),

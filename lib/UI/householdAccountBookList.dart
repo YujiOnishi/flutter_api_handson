@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widget/drawerMenu.dart';
 import './input.dart';
 
+// ignore: must_be_immutable
 class HouseholdAcccountBookList extends HookConsumerWidget {
   List<HouseholdAccountData> householdAccountDataList = [];
   TabController tabController;
@@ -13,6 +14,14 @@ class HouseholdAcccountBookList extends HookConsumerWidget {
     Tab(text: '収入'),
     Tab(text: '支出'),
   ];
+
+
+
+  static Route<dynamic> route() {
+    return MaterialPageRoute<dynamic>(
+      builder: (_) => HouseholdAcccountBookList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -140,9 +149,8 @@ class HouseholdAcccountBookList extends HookConsumerWidget {
   void onPressDeleteButton(int id) {}
 
   void onPressAddButton(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (BuildContext context) => InputForm()),
+    Navigator.of(context).push<dynamic>(
+      InputForm.route(),
     );
   }
 }

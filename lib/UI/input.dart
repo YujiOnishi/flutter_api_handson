@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 class InputForm extends StatefulWidget {
   InputForm();
 
+  static Route<dynamic> route() {
+    return MaterialPageRoute<dynamic>(
+      builder: (_) => InputForm(),
+    );
+  }
+
   @override
   MyInputFormState createState() => MyInputFormState();
 }
