@@ -13,7 +13,7 @@ class PieData {
 }
 
 // ignore: must_be_immutable
-class HouseholdAcccountBookDetail extends HookConsumerWidget {
+class HouseholdAcccountBookDetail extends StatelessWidget {
   List<HouseholdAccountData> householdAccountDataList = [];
   List<charts.Series<PieData, String>> _pieData = [];
 
@@ -52,7 +52,7 @@ class HouseholdAcccountBookDetail extends HookConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     this.householdAccountDataList =
         HouseholdAccountDataHttp.getHouseholdAccountDataList();
 

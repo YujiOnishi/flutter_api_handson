@@ -6,7 +6,7 @@ import '../widget/drawerMenu.dart';
 import './input.dart';
 
 // ignore: must_be_immutable
-class HouseholdAcccountBookList extends HookConsumerWidget {
+class HouseholdAcccountBookList extends StatelessWidget {
   List<HouseholdAccountData> householdAccountDataList = [];
   TabController tabController;
   final List<Tab> tabs = <Tab>[
@@ -22,7 +22,7 @@ class HouseholdAcccountBookList extends HookConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     this.householdAccountDataList =
         HouseholdAccountDataHttp.getHouseholdAccountDataList();
 
