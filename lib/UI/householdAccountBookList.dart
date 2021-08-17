@@ -6,7 +6,7 @@ import '../widget/drawerMenu.dart';
 import './input.dart';
 
 // ignore: must_be_immutable
-class HouseholdAcccountBookList extends StatelessWidget {
+class HouseholdAccountBookList extends StatelessWidget {
   List<HouseholdAccountData> householdAccountDataList = [];
   TabController tabController;
   final List<Tab> tabs = <Tab>[
@@ -17,7 +17,7 @@ class HouseholdAcccountBookList extends StatelessWidget {
 
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(
-      builder: (_) => HouseholdAcccountBookList(),
+      builder: (_) => HouseholdAccountBookList(),
     );
   }
 

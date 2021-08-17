@@ -13,13 +13,13 @@ class PieData {
 }
 
 // ignore: must_be_immutable
-class HouseholdAcccountBookDetail extends StatelessWidget {
+class HouseholdAccountBookDetail extends StatelessWidget {
   List<HouseholdAccountData> householdAccountDataList = [];
   List<charts.Series<PieData, String>> _pieData = [];
 
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(
-      builder: (_) => HouseholdAcccountBookDetail(),
+      builder: (_) => HouseholdAccountBookDetail(),
     );
   }
 
