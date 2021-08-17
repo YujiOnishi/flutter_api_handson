@@ -5,7 +5,6 @@ import '../widget/drawerMenu.dart';
 import './input.dart';
 
 class HouseholdAccountBookList extends StatelessWidget {
-  final List<HouseholdAccountData> householdAccountDataList = HouseholdAccountDataHttp.getHouseholdAccountDataList();
   final List<Tab> tabs = <Tab>[
     Tab(text: '総合'),
     Tab(text: '収入'),
@@ -20,59 +19,75 @@ class HouseholdAccountBookList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: tabs.length,
-      child: Scaffold(
-        appBar: AppBar(
-          title: createAppBarText(),
-          bottom: TabBar(
-            tabs: tabs,
-          ),
-        ),
-        drawer: DrawerMenu(),
-        body: TabBarView(
-          children: tabs.map(
-            (Tab tab) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    createHouseholdAcccountBookDetail(tab.text),
-                  ],
+    Future<List<HouseholdAccountData>> householdAccountDataList =
+        HouseholdAccountDataHttp.getHouseholdAccountDataList();
+
+    return FutureBuilder<List<HouseholdAccountData>>(
+      future: householdAccountDataList,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return DefaultTabController(
+            length: tabs.length,
+            child: Scaffold(
+              appBar: AppBar(
+                title: createAppBarText(),
+                bottom: TabBar(
+                  tabs: tabs,
                 ),
-              );
-            },
-          ).toList(),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            onPressAddButton(context);
-          },
-        ),
-      ),
+              ),
+              drawer: DrawerMenu(),
+              body: TabBarView(
+                children: tabs.map(
+                      (Tab tab) {
+                    return SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            createHouseholdAcccountBookDetail(
+                                tab.text, snapshot.data),
+                          ],
+                        ),
+                    );
+                  },
+                ).toList(),
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: () {
+                  onPressAddButton(context);
+                },
+              ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text('error');
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 
-  Widget createHouseholdAcccountBookDetail(String tabText) {
+  Widget createHouseholdAcccountBookDetail(
+      String tabText, List<HouseholdAccountData> householdAccountDataList) {
     int tabType;
 
     switch (tabText) {
       case '総合':
         tabType = 3;
         return Column(
-          children: createWordCards(tabType),
+          children: createWordCards(tabType, householdAccountDataList),
         );
         break;
       case '収入':
         tabType = HouseholdAccountData.incomeFlg;
         return Column(
-          children: createWordCards(tabType),
+          children: createWordCards(tabType, householdAccountDataList),
         );
         break;
       case '支出':
         tabType = HouseholdAccountData.spendingFlg;
         return Column(
-          children: createWordCards(tabType),
+          children: createWordCards(tabType, householdAccountDataList),
         );
         break;
       default:
@@ -84,7 +99,8 @@ class HouseholdAccountBookList extends StatelessWidget {
     return Text("家計簿一覧");
   }
 
-  List<Widget> createWordCards(int tabType) {
+  List<Widget> createWordCards(
+      int tabType, List<HouseholdAccountData> householdAccountDataList) {
     return householdAccountDataList.map(
       (HouseholdAccountData householdAccountData) {
         if (householdAccountData.type == tabType || tabType == 3) {

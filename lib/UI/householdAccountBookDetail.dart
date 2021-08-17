@@ -3,6 +3,7 @@ import 'package:api/model/HouseholdAccountData.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import '../widget/drawerMenu.dart';
+import 'dart:math' as math;
 
 class PieData {
   String activity;
@@ -17,7 +18,8 @@ class HouseholdAccountBookDetail extends StatelessWidget {
     );
   }
 
-  List<charts.Series<PieData, String>> generateData(List<HouseholdAccountData> householdAccountDataList) {
+  List<charts.Series<PieData, String>> generateData(
+      List<HouseholdAccountData> householdAccountDataList) {
     List<charts.Series<PieData, String>> _pieData = [];
     double income = 0;
     double outcome = 0;
@@ -48,27 +50,37 @@ class HouseholdAccountBookDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<HouseholdAccountData> householdAccountDataList =
+    Future<List<HouseholdAccountData>> householdAccountDataList =
         HouseholdAccountDataHttp.getHouseholdAccountDataList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: createAppBarText(),
-      ),
-      drawer: DrawerMenu(),
-      body: Center(
-        child: charts.PieChart(
-          generateData(householdAccountDataList),
-          animate: true,
-          animationDuration: Duration(seconds: 1),
-          defaultRenderer: new charts.ArcRendererConfig(
-            arcRendererDecorators: [
-              new charts.ArcLabelDecorator(
-                  labelPosition: charts.ArcLabelPosition.inside)
-            ],
-          ),
-        ),
-      ),
+    return FutureBuilder<List<HouseholdAccountData>>(
+      future: householdAccountDataList,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: createAppBarText(),
+            ),
+            drawer: DrawerMenu(),
+            body: Center(
+              child: charts.PieChart(
+                generateData(snapshot.data),
+                animate: true,
+                animationDuration: Duration(seconds: 1),
+                defaultRenderer: new charts.ArcRendererConfig(
+                  arcRendererDecorators: [
+                    new charts.ArcLabelDecorator(
+                        labelPosition: charts.ArcLabelPosition.inside)
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text('error');
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 
