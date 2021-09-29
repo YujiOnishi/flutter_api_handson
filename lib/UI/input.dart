@@ -132,7 +132,7 @@ class InputForm extends HookWidget {
         child: Text('登録'),
         onPressed: () {
           formKey.currentState.save();
-          this._data.type = _context.read(inputFormProvider.notifier).state == RadioValue.SPENDING ? 1 : 0;
+          this._data.type = _context.read(inputFormProvider.notifier).state == RadioValue.INCOME ? 1 : 0;
           HouseholdAccountDataHttp.saveHouseholdAccountData(_data);
           Navigator.of(_context).pop<dynamic>();
         },
