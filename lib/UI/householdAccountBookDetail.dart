@@ -1,8 +1,8 @@
-import 'package:api/http/HouseholdAccountDataHttp.dart';
-import 'package:api/entity/HouseholdAccountData.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import '../widget/drawerMenu.dart';
+import '../http/HouseholdAccountDataHttp.dart';
+import '../entity/HouseholdAccountData.dart';
 
 class PieData {
   String activity;

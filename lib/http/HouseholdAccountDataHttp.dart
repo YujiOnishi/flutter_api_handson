@@ -1,8 +1,6 @@
-import 'dart:convert';
-
-import 'package:api/entity/HouseholdAccountData.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import '../entity/HouseholdAccountData.dart';
 
 class HouseholdAccountDataHttp {
   static Uri uri = Uri.parse('https://script.google.com/macros/s/AKfycbwqSD3jNHnUvG30N0CKJyLEwqTtdRCs9ewuVTHDAOqf3dzea7_L/exec');
@@ -36,7 +34,7 @@ class HouseholdAccountDataHttp {
     String detail = data.item;
     int amount = 0;
 
-    final request = json.encode({'date': now.toString(), 'cost': cost.toString(), 'type': type.toString(), 'detail': detail, 'amount': amount.toString()});
+    final request = convert.json.encode({'date': now.toString(), 'cost': cost.toString(), 'type': type.toString(), 'detail': detail, 'amount': amount.toString()});
     final headers = {"Content-Type": "application/x-www-form-urlencoded"};
 
     var response = await http.post(uri, body: request, headers: headers);
