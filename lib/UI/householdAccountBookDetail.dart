@@ -1,9 +1,8 @@
 import 'package:api/http/HouseholdAccountDataHttp.dart';
-import 'package:api/model/HouseholdAccountData.dart';
+import 'package:api/entity/HouseholdAccountData.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import '../widget/drawerMenu.dart';
-import 'dart:math' as math;
 
 class PieData {
   String activity;
@@ -15,6 +14,42 @@ class HouseholdAccountBookDetail extends StatelessWidget {
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(
       builder: (_) => HouseholdAccountBookDetail(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Future<List<HouseholdAccountData>> householdAccountDataList =
+        HouseholdAccountDataHttp.getHouseholdAccountDataList();
+
+    return FutureBuilder<List<HouseholdAccountData>>(
+      future: householdAccountDataList,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("収入支出"),
+            ),
+            drawer: DrawerMenu(),
+            body: Center(
+              child: charts.PieChart(
+                generateData(snapshot.data),
+                animate: true,
+                animationDuration: Duration(seconds: 1),
+                defaultRenderer: new charts.ArcRendererConfig(
+                  arcRendererDecorators: [
+                    new charts.ArcLabelDecorator(
+                        labelPosition: charts.ArcLabelPosition.inside)
+                  ],
+                ),
+              ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text('error');
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 
@@ -46,45 +81,5 @@ class HouseholdAccountBookDetail extends StatelessWidget {
       ),
     );
     return _pieData;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Future<List<HouseholdAccountData>> householdAccountDataList =
-        HouseholdAccountDataHttp.getHouseholdAccountDataList();
-
-    return FutureBuilder<List<HouseholdAccountData>>(
-      future: householdAccountDataList,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: createAppBarText(),
-            ),
-            drawer: DrawerMenu(),
-            body: Center(
-              child: charts.PieChart(
-                generateData(snapshot.data),
-                animate: true,
-                animationDuration: Duration(seconds: 1),
-                defaultRenderer: new charts.ArcRendererConfig(
-                  arcRendererDecorators: [
-                    new charts.ArcLabelDecorator(
-                        labelPosition: charts.ArcLabelPosition.inside)
-                  ],
-                ),
-              ),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('error');
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Widget createAppBarText() {
-    return Text("収入支出");
   }
 }

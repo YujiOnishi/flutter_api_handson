@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   charts_flutter: ^0.11.0
-  hooks_riverpod: ^1.0.0-dev.6
+  hooks_riverpod: ^0.14.0+4
   http: ^0.13.3
 
 

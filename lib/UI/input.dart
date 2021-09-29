@@ -1,92 +1,91 @@
-import 'package:api/model/HouseholdAccountData.dart';
+import 'package:api/entity/HouseholdAccountData.dart';
+import 'package:api/http/HouseholdAccountDataHttp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class InputForm extends StatefulWidget {
+enum RadioValue { SPENDING, INCOME }
+
+class InputFormState extends StateNotifier<RadioValue> {
+  InputFormState() : super(RadioValue.INCOME);
+
+  void changeState(value) {
+    this.state = value;
+  }
+}
+
+final inputFormProvider = StateNotifierProvider<InputFormState, RadioValue>((refs) => InputFormState());
+
+class InputForm extends HookWidget {
   InputForm();
-
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(
       builder: (_) => InputForm(),
     );
   }
 
-  @override
-  MyInputFormState createState() => MyInputFormState();
-}
-
-enum RadioValue { SPENDING, INCOME }
-
-class MyInputFormState extends State<InputForm> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  HouseholdAccountData data = HouseholdAccountData(0, 0, "", 0);
-  RadioValue _gValue = RadioValue.SPENDING;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  HouseholdAccountData _data = HouseholdAccountData(0, 0, "", 0);
+  BuildContext _context;
+  RadioValue _groupValue;
 
   @override
   Widget build(BuildContext context) {
+    this._groupValue = useProvider(inputFormProvider);
+    this._context = context;
     return Scaffold(
       appBar: AppBar(
         title: const Text('家計簿登録'),
       ),
       body: SafeArea(
         child: Form(
-          key: formKey,
+          key: _formKey,
           child: ListView(
             padding: const EdgeInsets.all(20.0),
-            children: <Widget>[
-              createRadioListColumn(),
-              createTextFieldColumn(),
-              createSaveIconButton()
-            ],
+            children: <Widget>[_createRadioListColumn(context, _groupValue), _createTextFieldColumn(), _createSaveIconButton(_formKey)],
           ),
         ),
       ),
     );
   }
 
-  Widget createRadioListColumn() {
+  Widget _createRadioListColumn(BuildContext context, RadioValue groupValue) {
     return Padding(
       padding: EdgeInsets.all(0),
       child: Column(
         children: [
-          createSpendingRadioList(),
-          createIncomeRadioList(),
+          _createRadioList(context, groupValue, RadioValue.INCOME),
+          _createRadioList(context, groupValue, RadioValue.SPENDING),
         ],
       ),
     );
   }
 
-  Widget createSpendingRadioList() {
+  Widget _createRadioList(BuildContext context, RadioValue groupValue, RadioValue value) {
+    String text = (value == RadioValue.SPENDING ? '支出' : '収入');
+
     return RadioListTile(
-      title: Text('支出'),
-      value: RadioValue.SPENDING,
-      groupValue: _gValue,
-      onChanged: (value) => _onRadioSelected(value),
+      title: Text(text),
+      value: value,
+      groupValue: groupValue,
+      onChanged: (value) => _onRadioSelected(value, context),
     );
   }
 
-  Widget createIncomeRadioList() {
-    return RadioListTile(
-      title: Text('収入'),
-      value: RadioValue.INCOME,
-      groupValue: _gValue,
-      onChanged: (value) => _onRadioSelected(value),
-    );
-  }
-
-  Widget createTextFieldColumn() {
+  Widget _createTextFieldColumn() {
     return Padding(
       padding: EdgeInsets.all(20),
       child: Column(
         children: [
-          createItemTextField(),
-          createMoneyTextField(),
+          _createItemTextField(),
+          _createMoneyTextField(),
         ],
       ),
     );
   }
 
-  Widget createItemTextField() {
+  Widget _createItemTextField() {
     return TextFormField(
       decoration: const InputDecoration(
         icon: const Icon(Icons.library_books),
@@ -94,7 +93,7 @@ class MyInputFormState extends State<InputForm> {
         labelText: 'Item',
       ),
       onSaved: (String value) {
-        data.item = value;
+        _data.item = value;
       },
       validator: (value) {
         if (value.isEmpty) {
@@ -102,11 +101,11 @@ class MyInputFormState extends State<InputForm> {
         }
         return null;
       },
-      initialValue: data.item,
+      initialValue: _data.item,
     );
   }
 
-  Widget createMoneyTextField() {
+  Widget _createMoneyTextField() {
     return TextFormField(
       decoration: const InputDecoration(
         icon: const Icon(CupertinoIcons.money_dollar),
@@ -114,7 +113,7 @@ class MyInputFormState extends State<InputForm> {
         labelText: 'Money',
       ),
       onSaved: (String value) {
-        data.item = value;
+        _data.money = int.parse(value);
       },
       validator: (value) {
         if (value.isEmpty) {
@@ -122,23 +121,26 @@ class MyInputFormState extends State<InputForm> {
         }
         return null;
       },
-      initialValue: data.item,
+      initialValue: _data.item,
     );
   }
 
-  Widget createSaveIconButton() {
+  Widget _createSaveIconButton(GlobalKey<FormState> formKey) {
     return Padding(
       padding: EdgeInsets.all(30),
       child: ElevatedButton(
         child: Text('登録'),
-        onPressed: () {},
+        onPressed: () {
+          formKey.currentState.save();
+          this._data.type = _context.read(inputFormProvider.notifier).state == RadioValue.SPENDING ? 1 : 0;
+          HouseholdAccountDataHttp.saveHouseholdAccountData(_data);
+          Navigator.of(_context).pop<dynamic>();
+        },
       ),
     );
   }
 
-  _onRadioSelected(value) {
-    setState(() {
-      _gValue = value;
-    });
+  void _onRadioSelected(value, BuildContext context) {
+    context.read(inputFormProvider.notifier).changeState(value);
   }
 }
