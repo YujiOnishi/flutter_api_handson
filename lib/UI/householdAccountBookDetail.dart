@@ -1,8 +1,9 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import '../widget/drawerMenu.dart';
 import '../http/HouseholdAccountDataHttp.dart';
 import '../entity/HouseholdAccountData.dart';
+import './chart_container.dart';
 
 class PieData {
   String activity;
@@ -32,16 +33,32 @@ class HouseholdAccountBookDetail extends StatelessWidget {
             ),
             drawer: DrawerMenu(),
             body: Center(
-              child: charts.PieChart(
-                generateData(snapshot.data),
-                animate: true,
-                animationDuration: Duration(seconds: 1),
-                defaultRenderer: new charts.ArcRendererConfig(
-                  arcRendererDecorators: [
-                    new charts.ArcLabelDecorator(
-                        labelPosition: charts.ArcLabelPosition.inside)
-                  ],
-                ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ChartContainer(
+                        title: '収入支出',
+                        color: const Color(0x00000000),
+                        chart: PieChart(
+                          PieChartData(
+                            sections: [
+                              PieChartSectionData(
+                                value: generateData(
+                                    snapshot.data!, HouseholdAccountData.spendingFlg),
+                                title: '支出',
+                                color: const Color(0xffed733f),
+                              ),
+                              PieChartSectionData(
+                                value: generateData(
+                                    snapshot.data!, HouseholdAccountData.incomeFlg),
+                                title: '収入',
+                                color: const Color(0xFF733FED),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                ],
               ),
             ),
           );
@@ -53,33 +70,21 @@ class HouseholdAccountBookDetail extends StatelessWidget {
     );
   }
 
-  List<charts.Series<PieData, String>> generateData(
-      List<HouseholdAccountData> householdAccountDataList) {
-    List<charts.Series<PieData, String>> _pieData = [];
-    double income = 0;
-    double outcome = 0;
+  double generateData(List<HouseholdAccountData> householdAccountDataList, int type) {
+    var income = 0.0;
+    var outcome = 0.0;
 
-    householdAccountDataList
-        .forEach((HouseholdAccountData householdAccountData) {
+    householdAccountDataList.forEach((HouseholdAccountData householdAccountData) {
       if (householdAccountData.type == HouseholdAccountData.incomeFlg) {
         income += householdAccountData.money;
       } else {
         outcome += householdAccountData.money;
       }
     });
-    var pieData = [
-      new PieData('支出 ', outcome),
-      new PieData('収入', income),
-    ];
-    _pieData.add(
-      charts.Series(
-        domainFn: (PieData data, _) => data.activity,
-        measureFn: (PieData data, _) => data.money,
-        id: 'Time spent',
-        data: pieData,
-        labelAccessorFn: (PieData data, _) => '${data.activity}:${data.money}円',
-      ),
-    );
-    return _pieData;
+
+    if (type == HouseholdAccountData.spendingFlg) {
+      return outcome;
+    }
+    return income;
   }
 }
