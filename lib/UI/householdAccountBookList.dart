@@ -41,7 +41,7 @@ class HouseholdAccountBookList extends StatelessWidget {
                     return SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
-                          _createHouseholdAcccountBookDetail(tab.text, snapshot.data),
+                          _createHouseholdAcccountBookDetail(tab.text!, snapshot.data!),
                         ],
                       ),
                     );
